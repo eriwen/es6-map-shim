@@ -1,0 +1,26 @@
+{
+  "name": "es6-map-shim",
+  "description": "A polyfill ES6 Map that closely follows the latest spec",
+  "author": "Eric Wendelin <me@eriwen.com> (http://eriwen.com)",
+  "version": "0.1.0",
+  "keywords": ["es6", "harmony", "map", "shim", "polyfill"],
+  "homepage": "http://eriwen.github.com/es6-map-shim/",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eriwen/es6-map-shim.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eriwen/es6-map-shim/issues"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "https://github.com/eriwen/es6-map-shim/blob/master/LICENSE"
+  }],
+  "main": "./es6-map-shim.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "make jstd"
+  }
+}
