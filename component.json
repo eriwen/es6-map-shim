@@ -4,7 +4,7 @@
   "description": "A forward polyfill for ES6 Maps",
   "author": "Eric Wendelin",
   "homepage": "http://eriwen.github.com/es6-map-shim/",
-  "version": "0.1.1",
+  "version": "0.2",
   "keywords": ["es6", "harmony", "map", "shim", "polyfill"],
   "dependencies": {},
   "development": {},

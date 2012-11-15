@@ -2,7 +2,7 @@
   "name": "es6-map-shim",
   "description": "A polyfill ES6 Map that closely follows the latest spec",
   "author": "Eric Wendelin <me@eriwen.com> (http://eriwen.com)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": ["es6", "harmony", "map", "shim", "polyfill"],
   "homepage": "http://eriwen.github.com/es6-map-shim/",
   "repository": {
