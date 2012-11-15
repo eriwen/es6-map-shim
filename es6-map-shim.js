@@ -6,7 +6,7 @@
  *
  * This library assumes ES5 functionality: Object.create, Object.defineProperty, Array.indexOf, Function.bind
  */
-function Map() {
+function Map(iterable) {
     var _items = [];
     var _keys = [];
     var _values = [];
@@ -26,31 +26,66 @@ function Map() {
         return i;
     };
 
-    // TODO: look at other shims for this
-    var MapIterator = function MapIterator(kind) {
-        var _m;
-        var _itemKind = kind;
+    var MapIterator = function MapIterator(map, kind) {
         var _index = 0;
 
         return Object.create({}, {
             next: {
                 value: function() {
                     // check if index is within bounds
-
+                    if (_index < map.items().length) {
+                        switch(kind) {
+                            case 'keys': return map.keys()[_index++];
+                            case 'values': return map.values()[_index++];
+                            case 'keys+values': return [].slice.call(map.items()[_index++]);
+                            default: throw new TypeError('Invalid iterator type');
+                        }
+                    }
+                    // TODO: make sure I'm interpreting the spec correctly here
+                    throw new Error('Stop Iteration');
                 }
             },
             iterator: {
-                value: this
+                value: function() {
+                    return this;
+                }
             },
             toString: {
                 value: function() {
-                    return '[Object Map Iterator]';
+                    return '[object Map Iterator]';
                 }
             }
         });
     };
 
-    // TODO: allow construction with arrays
+    var _set = function(key, value) {
+        // check if key exists and overwrite
+        var index = betterIndexOf.call(_keys, key);
+        if (index > -1) {
+            _items[index] = value;
+            _values[index] = value;
+        } else {
+            _items.push([key, value]);
+            _keys.push(key);
+            _values.push(value);
+        }
+    };
+
+    var setItem = function(item) {
+        if (item.length !== 2) {
+            throw new TypeError('Invalid iterable passed to Map constructor');
+        }
+
+        _set(item[0], item[1]);
+    };
+
+    // FIXME: accommodate any class that defines an @@iterator method that returns
+    //      an iterator object that produces two element array-like objects
+    if (Array.isArray(iterable)) {
+        iterable.forEach(setItem);
+    } else if (iterable !== undefined) {
+        throw new TypeError('Invalid Map');
+    }
 
     return Object.create({}, {
         items:{
@@ -82,18 +117,7 @@ function Map() {
             }
         },
         set:{
-            value:function(key, value) {
-                // check if key exists and overwrite
-                var index = betterIndexOf.call(_keys, key);
-                if (index > -1) {
-                    _items[index] = value;
-                    _values[index] = value;
-                } else {
-                    _items.push([key, value]);
-                    _keys.push(key);
-                    _values.push(value);
-                }
-            }
+            value: _set
         },
         size:{
             get:function() {
@@ -118,12 +142,22 @@ function Map() {
             }
         },
         forEach:{
-            value:function(callbackfn/*, thisArg*/) {
-                // TODO: implement me
+            value:function(callbackfn /*, thisArg*/) {
+                if (typeof callbackfn != 'function') {
+                    throw new TypeError('Invalid callback function given to forEach');
+                }
+
+                for (var i = 0; i < _keys.length; i++) {
+                    if (this.has(_keys[i])) {
+                        callbackfn.apply(arguments[1], [_values[i], _keys[i], this]);
+                    }
+                }
             }
         },
         iterator:{
-            value: new MapIterator(this, 'keys+values')
+            value: function() {
+                return new MapIterator(this, 'keys+values');
+            }
         },
         toString:{
             value: function() {
