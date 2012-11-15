@@ -273,6 +273,12 @@ describe('es6-map-shim', function() {
             expect(iterator.next()).toEqual([undefined, 42]);
             expect(function(){ iterator.next() }).toThrow(new Error('Stop Iteration'));
         });
+
+        it('should return itself', function() {
+            var map = new Map([['foo', 'bar'], [undefined, 42]]);
+            var iterator = map.iterator();
+            expect(iterator.iterator()).toBe(iterator);
+        });
     });
 
     describe('Map::toString', function() {
