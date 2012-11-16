@@ -1,6 +1,8 @@
 # es6-map-shim - A polyfill for ES6 Maps
 This is a *destructive* shim that implements the ES6 Map specification as closely as possible.
 
+It is *slow* (lookups in O(n) time for now) and not intended for use in a production environment.
+
 ```js
 var map = new Map([['foo', 'bar'], [-0, function(){}]]);
 map.set(null, 42);
