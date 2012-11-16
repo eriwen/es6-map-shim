@@ -1,10 +1,15 @@
-//! Copyright 2012 Eric Wendelin - MIT License
-
 /**
- * es6-map-shim.js is a DESTRUCTIVE shim that follows the latest Map specification as closely as possible.
- * It is destructive in the sense that it overrides native implementations.
+ * Copyright 2012 Eric Wendelin - MIT License
  *
- * This library assumes ES5 functionality: Object.create, Object.defineProperty, Array.indexOf, Function.bind
+ * es6-map-shim.js is a DESTRUCTIVE shim that follows the latest Map specification
+ * as closely as possible. It is destructive in the sense that it overrides native implementations.
+ *
+ * IMPORTANT: Currently, get(), set(), has() and delete() are all O(n) operations.
+ * Normally, they would be O(1). Therefore it is NOT recommended to use this with
+ * a large dataset or in any production environment.
+ *
+ * This library assumes ES5 functionality: Object.create, Object.defineProperty,
+ * Array.indexOf, Function.bind and others.
  */
 (function(module) {
     function Map(iterable) {
@@ -29,6 +34,14 @@
             return i;
         };
 
+        /**
+         * MapIterator used for iterating over all entries in given map.
+         *
+         * @param map {Map} to iterate
+         * @param kind {String} identifying what to yield. Possible values
+         *      are 'keys', 'values' and 'keys+values'
+         * @constructor
+         */
         var MapIterator = function MapIterator(map, kind) {
             var _index = 0;
 
@@ -91,47 +104,88 @@
         }
 
         return Object.create(MapPrototype, {
+            /**
+             * @return {Array} all entries in the Map, in order
+             */
             items:{
                 value:function() {
                     return [].slice.call(_items);
                 }
             },
+            /**
+             * @return {Array} all keys in the Map, in order
+             */
             keys:{
                 value:function() {
                     return [].slice.call(_keys);
                 }
             },
+            /**
+             * @return {Array} all values in the Map, in order
+             */
             values:{
                 value:function() {
                     return [].slice.call(_values);
                 }
             },
+            /**
+             * Given a key, indicate whether that key exists in this Map.
+             *
+             * @param key {Object} expected key
+             * @return {Boolean} true if key in Map
+             */
             has:{
                 value:function(key) {
-                    // TODO: check how spec reads about null values
+                    // TODO: double-check how spec reads about null values
                     var index = betterIndexOf.call(_keys, key);
                     return index > -1;
                 }
             },
+            /**
+             * Given a key, retrieve the value associated with that key (or undefined).
+             *
+             * @param key {Object}
+             * @return {Object} value associated with key or undefined
+             */
             get:{
                 value:function(key) {
                     var index = betterIndexOf.call(_keys, key);
                     return index > -1 ? _values[index] : undefined;
                 }
             },
+            /**
+             * Add or overwrite entry associating key with value. Always returns undefined.
+             *
+             * @param key {Object} anything
+             * @param value {Object} also anything
+             */
             set:{
                 value: _set
             },
+            /**
+             * Return the number of entries in this Map.
+             *
+             * @return {Number} number of entries
+             */
             size:{
                 get:function() {
                     return _items.length;
                 }
             },
+            /**
+             * Remove all entries in this Map. Returns undefined.
+             */
             clear:{
                 value:function() {
                     _keys.length = _values.length = _items.length = 0;
                 }
             },
+            /**
+             * Delete entry with given key, if it exists.
+             *
+             * @param key {Object} any possible key
+             * @return {Boolean} true if an entry was deleted
+             */
             'delete':{
                 value:function(key) {
                     var index = betterIndexOf.call(_keys, key);
@@ -144,6 +198,12 @@
                     return false;
                 }
             },
+            /**
+             * Given a callback function and optional context, invoke the callback on all
+             * entries in this Map.
+             *
+             * @param callbackFn {Function}
+             */
             forEach:{
                 value:function(callbackfn /*, thisArg*/) {
                     if (typeof callbackfn != 'function') {
@@ -168,6 +228,9 @@
                     }
                 }
             },
+            /**
+             * Return a MapIterator object for this map.
+             */
             iterator:{
                 value: function() {
                     return new MapIterator(this, 'keys+values');
