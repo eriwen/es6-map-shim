@@ -90,7 +90,7 @@
             throw new TypeError('Invalid Map');
         }
 
-        return Object.create({}, {
+        return Object.create(MapPrototype, {
             items:{
                 value:function() {
                     return [].slice.call(_items);
@@ -150,10 +150,21 @@
                         throw new TypeError('Invalid callback function given to forEach');
                     }
 
-                    for (var i = 0; i < _keys.length; i++) {
-                        if (this.has(_keys[i])) {
-                            callbackfn.apply(arguments[1], [_values[i], _keys[i], this]);
+                    function tryNext() {
+                        try {
+                            return iter.next();
+                        } catch(e) {
+                            return undefined;
                         }
+                    }
+
+                    var iter = this.iterator();
+                    var current = tryNext();
+                    var next = tryNext();
+                    while(current !== undefined) {
+                        callbackfn.apply(arguments[1], [current[1], current[0], this]);
+                        current = next;
+                        next = tryNext();
                     }
                 }
             },
@@ -170,10 +181,12 @@
         });
     }
 
-    Map.prototype = MapPrototype = Map();
-
     var notInNode = module == 'undefined';
     var window = notInNode ? this : global;
     var module = notInNode ? {} : exports;
+    var MapPrototype = Map.prototype;
+
+    Map.prototype = MapPrototype = Map();
+
     window.Map = module.Map = window.Map || Map;
 }.call(this, typeof exports));

@@ -246,14 +246,26 @@ describe('es6-map-shim', function() {
         });
 
         it('should skip items that are deleted before being visited', function() {
-            var map = new Map([['foo', 'bar'], [65, 42]]);
+            var map = new Map([['foo', 'bar'], [65, 42], [null, function(){}]]);
             var sums = [];
             map.forEach(function(value, key, mapRef) {
                 mapRef.delete(65);
                 sums.push(value + key);
             }, {'foo': function(){}});
-            expect(sums.length).toBe(1);
+            expect(sums.length).toBe(2);
             expect(sums[0]).toEqual('barfoo');
+        });
+
+        it('should not skip anything if items are deleted inline', function() {
+            var map = new Map([['foo', 'bar'], [65, 42]]);
+            var sums = [];
+            map.forEach(function(value, key, mapRef) {
+                mapRef.delete(key);
+                sums.push(value + key);
+            });
+            expect(sums.length).toBe(2);
+            expect(sums[0]).toEqual('barfoo');
+            expect(sums[1]).toEqual(107);
         });
     });
 
