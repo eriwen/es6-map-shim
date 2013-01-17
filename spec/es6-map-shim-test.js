@@ -286,6 +286,14 @@ describe('es6-map-shim', function() {
             expect(function(){ iterator.next() }).toThrow(new Error('Stop Iteration'));
         });
 
+        it('should handle delete while iterating gracefully', function() {
+            var map = new Map([['foo', 'bar'], [1, 2], ['last', 42]]);
+            var iterator = map.iterator();
+            expect(iterator.next()).toEqual(['foo', 'bar']);
+            expect(map.delete(1)).toBe(true);
+            expect(iterator.next()).toEqual(['last', 42]);
+        });
+
         it('should return itself', function() {
             var map = new Map([['foo', 'bar'], [undefined, 42]]);
             var iterator = map.iterator();
