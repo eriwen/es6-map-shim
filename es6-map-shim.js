@@ -78,7 +78,7 @@
             // check if key exists and overwrite
             var index = betterIndexOf.call(_keys, key);
             if (index > -1) {
-                _items[index] = value;
+                _items[index][1] = value;
                 _values[index] = value;
             } else {
                 _items.push([key, value]);

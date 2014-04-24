@@ -156,6 +156,15 @@ describe('es6-map-shim', function() {
             expect(map.values()).toEqual([undefined]);
             expect(map.items()).toEqual([[undefined, undefined]]);
         });
+
+        it('should update value given existing key', function() {
+            var map = new Map();
+            map.set('foo', 'bar');
+            map.set('foo', 'baz');
+            expect(map.keys()).toEqual(['foo']);
+            expect(map.values()).toEqual(['baz']);
+            expect(map.items()).toEqual([['foo', 'baz']]);
+        });
     });
 
     describe('Map.size', function() {
