@@ -1,3 +1,5 @@
+# DEPRECATED: New ES6 Map Spec cannot be shimmed
+
 # es6-map-shim - A polyfill for ES6 Maps
 This is a *destructive* shim that implements the ES6 Map specification as closely as possible.
 
